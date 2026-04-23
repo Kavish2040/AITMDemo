@@ -3,90 +3,119 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AiTM Phishing — Live Attack Demo</title>
+<title>AiTM Phishing — Attack Flow</title>
+<link rel="preconnect" href="https://rsms.me/">
+<link rel="stylesheet" href="https://rsms.me/inter/inter.css">
 <style>
   :root {
-    --bg:        #07091a;
-    --bg-2:      #0b1126;
-    --panel:     #0f1733;
-    --line:      #1e2a55;
-    --line-2:    #2a3a72;
-    --text:      #eef1ff;
-    --muted:     #8a95be;
-    --victim:    #4ecbff;
-    --proxy:     #ff4a6b;
-    --server:    #2ed07a;
-    --neon:      #00ffa3;
-    --warn:      #ffc14a;
-    --ms-blue:   #0067b8;
+    /* Surface */
+    --bg:          #0a0b10;
+    --bg-elevated: #11131c;
+    --bg-card:     #151826;
+    --bg-soft:     #1a1d2b;
+
+    /* Line */
+    --line:        rgba(255,255,255,0.06);
+    --line-2:      rgba(255,255,255,0.09);
+    --line-3:      rgba(255,255,255,0.14);
+
+    /* Text */
+    --text:        #e6e8ef;
+    --text-dim:    #a2a9b8;
+    --text-faint:  #6b7280;
+
+    /* Semantic (restrained) */
+    --victim:      #60a5fa;
+    --proxy:       #f87171;
+    --server:      #34d399;
+    --accent:      #34d399;
+    --warn:        #fbbf24;
+
+    /* MS brand */
+    --ms-blue:     #0067b8;
+
+    /* Premium shadow: inset hairline + soft drop */
+    --shadow-card: 0 1px 0 rgba(255,255,255,0.04) inset, 0 18px 44px -20px rgba(0,0,0,0.7);
+    --shadow-lift: 0 1px 0 rgba(255,255,255,0.06) inset, 0 28px 56px -24px rgba(0,0,0,0.8);
   }
+
   * { box-sizing: border-box; }
   html, body {
     margin: 0; padding: 0; height: 100%;
-    background:
-      radial-gradient(1600px 900px at 50% -10%, #131d4a 0%, transparent 60%),
-      var(--bg);
     color: var(--text);
-    font-family: "Inter", "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-feature-settings: "cv02","cv03","cv04","cv11","ss01";
+    -webkit-font-smoothing: antialiased;
     overflow: hidden;
+    background:
+      radial-gradient(900px 500px at 20% -5%,  rgba(96,165,250,0.06), transparent 60%),
+      radial-gradient(700px 400px at 100% 0%,  rgba(248,113,113,0.05), transparent 60%),
+      var(--bg);
   }
 
   /* ---------- Layout ---------- */
   .app {
     display: grid;
-    grid-template-rows: 56px minmax(260px, 38vh) minmax(280px, 1fr) auto;
+    grid-template-rows: 60px minmax(240px, 34vh) minmax(280px, 1fr) auto;
     height: 100vh; width: 100vw;
   }
 
-  /* ---------- Top bar ---------- */
+  /* ================= TOP BAR ================= */
   .topbar {
     display: flex; align-items: center; justify-content: space-between;
-    padding: 0 24px;
+    padding: 0 28px;
     border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), transparent);
   }
   .brand {
     display:flex; align-items:center; gap:12px;
-    font-weight:700; font-size:14px; letter-spacing:.4px;
+    font-weight: 600; font-size: 13.5px; letter-spacing: -0.01em;
   }
-  .brand .dot {
-    width:10px; height:10px; border-radius:50%;
-    background: var(--proxy);
-    box-shadow: 0 0 10px var(--proxy), 0 0 20px var(--proxy);
-    animation: pulse 1.4s ease-in-out infinite;
+  .brand .logo {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: linear-gradient(135deg, #1e2638, #11131c);
+    border: 1px solid var(--line-3);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--proxy);
   }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
-  .brand .sub { color: var(--muted); font-weight: 400; margin-left: 4px; }
+  .brand .divider { width: 1px; height: 18px; background: var(--line-2); }
+  .brand .sub { color: var(--text-dim); font-weight: 400; font-size: 12.5px; }
 
-  .progress {
-    display:flex; align-items:center; gap: 10px;
-  }
-  .progress .dotbar { display:flex; gap: 6px; }
-  .progress .p-dot {
-    width: 24px; height: 4px; border-radius: 2px;
-    background: var(--line-2);
-  }
-  .progress .p-dot.done { background: var(--muted); }
-  .progress .p-dot.active {
-    background: var(--neon);
-    box-shadow: 0 0 8px var(--neon);
-  }
+  .progress { display:flex; align-items:center; gap: 14px; }
   .progress .label {
-    font-size: 11.5px; color: var(--muted);
-    letter-spacing: 1.2px; text-transform: uppercase;
+    font-size: 10.5px; color: var(--text-faint);
+    letter-spacing: 1.4px; text-transform: uppercase; font-weight: 500;
   }
+  .progress .track {
+    width: 220px; height: 3px; border-radius: 999px;
+    background: var(--line); overflow: hidden; position: relative;
+  }
+  .progress .fill {
+    height: 100%; width: 0%;
+    background: linear-gradient(90deg, #3b82f6, #34d399);
+    transition: width .35s cubic-bezier(.4,0,.2,1);
+  }
+  .progress .count {
+    font-size: 11.5px; color: var(--text-dim);
+    font-variant-numeric: tabular-nums;
+  }
+  .progress .count b { color: var(--text); font-weight: 600; }
 
-  /* ---------- Hero (flow diagram) ---------- */
+  /* ================= HERO ================= */
   .hero {
-    position: relative;
+    position: relative; overflow: hidden;
     border-bottom: 1px solid var(--line);
-    overflow: hidden;
+    background:
+      radial-gradient(500px 240px at 50% 55%, rgba(248,113,113,0.05), transparent 70%);
   }
   .hero::before {
-    content: "";
-    position: absolute; inset: 0;
-    background:
-      repeating-linear-gradient(0deg,  transparent 0 47px, rgba(255,255,255,0.02) 47px 48px),
-      repeating-linear-gradient(90deg, transparent 0 47px, rgba(255,255,255,0.02) 47px 48px);
+    content: ""; position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 50%, transparent 100%);
     pointer-events: none;
   }
 
@@ -94,289 +123,380 @@
     position: absolute; inset: 0;
     display: grid; grid-template-columns: 1fr 1fr 1fr;
     align-items: center; justify-items: center;
-    padding: 0 40px;
+    padding: 0 48px;
     z-index: 2;
   }
   .node {
-    width: 220px; padding: 20px 18px 18px;
-    background: linear-gradient(180deg, var(--panel), var(--bg-2));
+    width: 236px; padding: 20px;
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
     border: 1px solid var(--line-2);
-    border-radius: 16px; text-align: center;
-    box-shadow: 0 14px 50px rgba(0,0,0,0.5);
-    transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+    border-radius: 12px;
+    box-shadow: var(--shadow-card);
+    transition: transform .35s cubic-bezier(.4,0,.2,1),
+                box-shadow .35s cubic-bezier(.4,0,.2,1),
+                border-color .35s cubic-bezier(.4,0,.2,1);
   }
+  .node .row1 { display:flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .node .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 9.5px; letter-spacing: 1.6px; font-weight: 600;
+    padding: 4px 9px; border-radius: 999px;
+    text-transform: uppercase;
+    border: 1px solid var(--line-2);
+  }
+  .node .pill .dot { width: 5px; height: 5px; border-radius: 50%; }
   .node .icon {
-    width: 64px; height: 64px; margin: 0 auto 10px;
-    border-radius: 50%;
+    width: 36px; height: 36px; border-radius: 8px;
     display:flex; align-items:center; justify-content:center;
-    font-size: 32px;
+    border: 1px solid var(--line-2);
+    background: var(--bg-soft);
   }
-  .node h3 { margin: 6px 0 4px; font-size: 17px; }
-  .node .sub { color: var(--muted); font-size: 11.5px; font-family: ui-monospace, Menlo, monospace; }
-  .node .tag {
-    display: inline-block; margin-bottom: 8px;
-    font-size: 10px; letter-spacing: 2px; font-weight: 700;
-    padding: 3px 10px; border-radius: 999px;
+  .node h3 {
+    margin: 0 0 4px; font-size: 16px; font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+  .node .sub {
+    color: var(--text-faint); font-size: 11px;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    letter-spacing: -0.01em;
   }
 
-  #victim { border-color: rgba(78,203,255,0.35); }
-  #victim .icon { background: rgba(78,203,255,0.15); color: var(--victim); }
-  #victim .tag { color: var(--victim); background: rgba(78,203,255,0.1); }
+  #victim .pill { color: var(--victim); border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+  #victim .pill .dot { background: var(--victim); }
+  #victim .icon svg { color: var(--victim); }
 
-  #proxy { border-color: rgba(255,74,107,0.55); }
-  #proxy .icon { background: rgba(255,74,107,0.18); color: var(--proxy); box-shadow: 0 0 30px rgba(255,74,107,0.4); }
-  #proxy .tag { color: var(--proxy); background: rgba(255,74,107,0.14); }
+  #proxy  .pill { color: var(--proxy); border-color: rgba(248,113,113,0.35); background: rgba(248,113,113,0.08); }
+  #proxy  .pill .dot { background: var(--proxy); }
+  #proxy  .icon svg { color: var(--proxy); }
+  #proxy {
+    border-color: rgba(248,113,113,0.25);
+    box-shadow: var(--shadow-card), 0 0 0 1px rgba(248,113,113,0.04);
+  }
 
-  #server { border-color: rgba(46,208,122,0.35); }
-  #server .icon { background: rgba(46,208,122,0.14); color: var(--server); }
-  #server .tag { color: var(--server); background: rgba(46,208,122,0.1); }
+  #server .pill { color: var(--server); border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.08); }
+  #server .pill .dot { background: var(--server); }
+  #server .icon svg { color: var(--server); }
 
   .node.active {
-    transform: translateY(-3px);
-    border-color: var(--neon);
-    box-shadow: 0 0 36px rgba(0,255,163,0.3), 0 14px 50px rgba(0,0,0,0.5);
+    transform: translateY(-2px);
+    border-color: var(--line-3);
+    box-shadow: var(--shadow-lift), 0 0 0 1px rgba(52,211,153,0.12);
   }
+  .node.active .icon { border-color: rgba(52,211,153,0.3); }
 
+  /* Edges */
   svg.edges {
     position: absolute; inset: 0; width: 100%; height: 100%;
     pointer-events: none; z-index: 1;
   }
   .edge {
-    stroke: #2b3a72; stroke-width: 2.5; fill: none;
-    stroke-dasharray: 8 10;
+    stroke: rgba(255,255,255,0.08); stroke-width: 1.5; fill: none;
+    stroke-dasharray: 4 6;
+    transition: stroke .25s;
   }
   .edge.active {
-    stroke: var(--neon);
-    animation: dash 0.9s linear infinite;
-    filter: drop-shadow(0 0 6px rgba(0,255,163,0.6));
+    stroke: rgba(52,211,153,0.55);
+    animation: dash 1s linear infinite;
   }
-  .edge.intercept.active {
-    stroke: var(--proxy);
-    filter: drop-shadow(0 0 8px rgba(255,74,107,0.75));
-  }
-  @keyframes dash { to { stroke-dashoffset: -180; } }
+  .edge.intercept.active { stroke: rgba(248,113,113,0.6); }
+  @keyframes dash { to { stroke-dashoffset: -100; } }
 
   .packet {
-    position: absolute; width: 16px; height: 16px; border-radius: 50%;
-    background: var(--neon);
-    box-shadow: 0 0 22px var(--neon), 0 0 40px var(--neon);
+    position: absolute; width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 12px rgba(52,211,153,0.8), 0 0 28px rgba(52,211,153,0.3);
     transform: translate(-50%, -50%);
     opacity: 0; z-index: 4;
   }
   .packet.evil {
     background: var(--proxy);
-    box-shadow: 0 0 22px var(--proxy), 0 0 40px var(--proxy);
+    box-shadow: 0 0 12px rgba(248,113,113,0.8), 0 0 28px rgba(248,113,113,0.3);
   }
 
-  /* ---------- Panels row (linked to hero columns) ---------- */
+  /* ================= PANELS ================= */
   .panels {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    padding: 0 40px;
-    gap: 24px;
-    align-items: stretch;
+    padding: 24px 28px;
+    gap: 20px;
     min-height: 0;
-    padding-top: 18px; padding-bottom: 18px;
   }
   .col { display: flex; flex-direction: column; min-height: 0; }
   .col-hdr {
     display:flex; align-items:center; gap: 8px;
-    font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase;
-    color: var(--muted); margin-bottom: 10px; font-weight: 600;
+    font-size: 10.5px; letter-spacing: 1.4px; text-transform: uppercase;
+    color: var(--text-faint); margin-bottom: 10px; font-weight: 600;
   }
-  .col-hdr .led { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); }
-  .col-hdr.victim   .led { background: var(--victim);   box-shadow: 0 0 8px var(--victim); }
-  .col-hdr.attacker .led { background: var(--proxy);    box-shadow: 0 0 8px var(--proxy); animation: pulse 1s ease-in-out infinite; }
-  .col-hdr.attacker { color: var(--proxy); }
-  .col-hdr.server   .led { background: var(--server);   box-shadow: 0 0 8px var(--server); }
+  .col-hdr .chip {
+    display: inline-block; width: 6px; height: 6px; border-radius: 50%;
+    background: var(--text-faint);
+  }
+  .col-hdr.victim   .chip { background: var(--victim); }
+  .col-hdr.attacker .chip { background: var(--proxy); }
+  .col-hdr.server   .chip { background: var(--server); }
 
-  /* Victim browser */
+  /* Browser (victim) */
   .browser {
-    background: #0f1733; border: 1px solid var(--line-2); border-radius: 12px;
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--line-2); border-radius: 10px;
     overflow: hidden; flex: 1;
     display: flex; flex-direction: column;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+    box-shadow: var(--shadow-card);
   }
   .urlbar {
     display:flex; align-items:center; gap:10px;
-    background: #182255; padding: 8px 12px; font-size: 12px;
+    background: var(--bg-soft);
+    padding: 9px 12px; border-bottom: 1px solid var(--line);
   }
   .urlbar .dots { display:flex; gap:6px; }
-  .urlbar .dots span { width:10px;height:10px;border-radius:50%; background:#3a4a85; }
-  .urlbar .url {
-    flex: 1; background:#0a1030; border:1px solid #2a3a78; padding: 6px 10px; border-radius: 6px;
-    font-family: ui-monospace, Menlo, monospace;
-    color: var(--text); display:flex; align-items:center; gap:8px;
-    cursor: pointer; font-size: 11.5px;
+  .urlbar .dots span {
+    width:8px; height:8px; border-radius:50%;
+    background: var(--line-3);
   }
-  .urlbar .url .lock { color: #6adf7e; }
+  .urlbar .url {
+    flex: 1; background: var(--bg);
+    border: 1px solid var(--line-2);
+    padding: 6px 10px; border-radius: 6px;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace;
+    color: var(--text); display:flex; align-items:center; gap:8px;
+    cursor: pointer; font-size: 11px;
+  }
+  .urlbar .url:hover { border-color: var(--line-3); }
+  .urlbar .url svg { flex-shrink: 0; }
+  .urlbar .url .lock { color: var(--server); }
   .urlbar .url .bad  { color: var(--proxy); }
 
   .login-body {
     background: #fff; color: #1b1b1b;
-    padding: 22px 28px;
+    padding: 26px 30px;
     flex: 1; display: flex; flex-direction: column; justify-content: flex-start;
     min-height: 0; overflow: auto;
   }
-  .ms-logo { display:flex; align-items:center; margin-bottom: 14px; }
+  .ms-logo { display:flex; align-items:center; margin-bottom: 18px; }
   .ms-logo i { width: 10px; height: 10px; display:inline-block; margin-right: 2px; }
   .ms-logo i:nth-child(1){background:#f25022}
   .ms-logo i:nth-child(2){background:#7fba00}
   .ms-logo i:nth-child(3){background:#00a4ef}
   .ms-logo i:nth-child(4){background:#ffb900}
-  .ms-logo span { font-size: 14px; color:#737373; margin-left:6px; font-weight: 600; font-family: "Segoe UI", sans-serif; }
-  .login-title { font-size: 20px; font-weight: 600; margin-bottom: 14px; }
+  .ms-logo span {
+    font-size: 14px; color:#737373; margin-left:6px;
+    font-weight: 600; font-family: "Segoe UI", sans-serif;
+  }
+  .login-title { font-size: 22px; font-weight: 600; margin-bottom: 16px; letter-spacing: -0.02em; }
   .login-input {
     width: 100%; border: none; border-bottom: 1px solid #666;
     padding: 6px 2px; font-size: 14px; outline: none; background: transparent; color: #1b1b1b;
+    font-family: inherit;
   }
   .login-input:focus { border-bottom-color: var(--ms-blue); }
   .ms-btn {
-    background: var(--ms-blue); color: #fff; border: none; padding: 5px 16px;
-    min-width: 100px; height: 32px; font-size: 14px; cursor: pointer; margin-top: 20px;
-    float: right;
+    background: var(--ms-blue); color: #fff; border: none;
+    padding: 6px 18px; min-width: 102px; height: 34px;
+    font-size: 14px; cursor: pointer; margin-top: 20px; float: right;
+    font-family: inherit;
   }
+  .ms-btn:hover { background: #005ba1; }
   .login-hint { font-size: 12.5px; color: #555; margin-top: 10px; }
 
-  /* Attacker capture */
+  /* Capture (attacker) */
   .capture {
-    background: #0a0f24; border: 1px solid var(--line-2); border-radius: 12px;
-    overflow: hidden; flex: 1; display: flex; flex-direction: column;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--line-2); border-radius: 10px;
+    overflow: hidden; flex: 1;
+    display: flex; flex-direction: column;
+    box-shadow: var(--shadow-card);
   }
   .capture .hdr {
-    background: linear-gradient(90deg, rgba(255,74,107,0.22), rgba(255,74,107,0));
-    padding: 10px 14px; font-size: 11.5px; letter-spacing: 2px; color: var(--proxy); font-weight: 700;
-    border-bottom: 1px solid var(--line-2);
+    padding: 11px 16px;
+    font-size: 10.5px; letter-spacing: 1.4px; color: var(--proxy); font-weight: 600;
+    border-bottom: 1px solid var(--line);
     display:flex; align-items:center; gap: 10px;
+    background:
+      linear-gradient(90deg, rgba(248,113,113,0.1), transparent 70%),
+      var(--bg-soft);
   }
-  .capture .hdr .led {
-    width: 9px; height: 9px; border-radius: 50%;
-    background: var(--proxy); box-shadow: 0 0 10px var(--proxy);
-    animation: pulse 1s ease-in-out infinite;
+  .capture .hdr .status {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-left: auto; color: var(--text-faint); font-weight: 500; letter-spacing: 1px;
+  }
+  .capture .hdr .status .led {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--proxy); box-shadow: 0 0 8px var(--proxy);
   }
   .rows {
-    padding: 2px 14px 8px; font-family: ui-monospace, Menlo, monospace; font-size: 12px;
+    padding: 4px 16px 10px;
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 11.5px;
     overflow: auto; flex: 1;
   }
   .row {
     display:flex; justify-content: space-between; align-items: center;
-    gap: 10px; padding: 8px 0; border-bottom: 1px dashed #1a2350;
+    gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line);
+    transition: background .4s;
   }
   .row:last-child { border: none; }
-  .row .k { color: var(--muted); flex-shrink: 0; font-size: 11px; }
+  .row .k { color: var(--text-faint); flex-shrink: 0; font-size: 10.5px; letter-spacing: 0.3px; text-transform: lowercase; }
   .row .v {
-    color: var(--text); text-align: right;
+    color: var(--text-dim); text-align: right;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    max-width: 62%;
+    max-width: 62%; font-size: 11.5px;
   }
-  .row .v.captured {
-    color: var(--neon);
-    text-shadow: 0 0 8px rgba(0,255,163,0.5); font-weight: 600;
-  }
-  .row.highlight { animation: rowFlash 0.9s ease; }
+  .row .v.captured { color: var(--accent); font-weight: 500; }
+  .row.highlight { animation: rowFlash .8s cubic-bezier(.4,0,.2,1); }
   @keyframes rowFlash {
-    0%   { background: rgba(0,255,163,0.0); }
-    30%  { background: rgba(0,255,163,0.28); }
-    100% { background: rgba(0,255,163,0.0); }
+    0%   { background: rgba(52,211,153,0.0); }
+    40%  { background: rgba(52,211,153,0.1); }
+    100% { background: rgba(52,211,153,0.0); }
   }
 
-  /* Server column — response card */
+  /* Server response */
   .response {
-    background: #0a1730; border: 1px solid var(--line-2); border-radius: 12px;
-    padding: 16px; flex: 1;
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--line-2); border-radius: 10px;
+    padding: 18px; flex: 1;
     display: flex; flex-direction: column; gap: 10px;
-    font-family: ui-monospace, Menlo, monospace; font-size: 12px;
-    box-shadow: 0 14px 40px rgba(0,0,0,0.4);
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 11.5px;
+    box-shadow: var(--shadow-card);
+    overflow: auto;
   }
-  .response .line { color: var(--muted); }
-  .response .line b { color: var(--text); font-weight: 600; }
-  .response .line.ok { color: var(--server); }
-  .response .line.new {
-    animation: slideIn .3s ease;
-    color: var(--text);
+  .response .line { color: var(--text-dim); }
+  .response .line .k { color: var(--text-faint); }
+  .response .line b { color: var(--text); font-weight: 500; }
+  .response .line.ok b { color: var(--server); }
+  .response .line.new { animation: slideIn .35s cubic-bezier(.4,0,.2,1); }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: none; }
   }
-  @keyframes slideIn { from{opacity:0; transform: translateY(4px);} to{opacity:1; transform:none;} }
 
-  /* ---------- Step card (bottom teleprompter) ---------- */
+  /* ================= STEP CARD ================= */
   .stepcard {
     display: grid;
     grid-template-columns: 1fr auto;
     align-items: center;
-    gap: 20px;
-    padding: 18px 40px 22px;
+    gap: 24px;
+    padding: 20px 28px 24px;
     border-top: 1px solid var(--line);
-    background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent);
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,0.2));
   }
   .step-left { min-width: 0; }
   .step-num {
-    display: inline-block;
-    font-size: 11px; letter-spacing: 2.4px; color: var(--neon);
-    font-weight: 700; margin-bottom: 4px;
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10.5px; letter-spacing: 1.6px; color: var(--text-faint);
+    font-weight: 600; margin-bottom: 6px; text-transform: uppercase;
+  }
+  .step-num .pulse {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px rgba(52,211,153,0.6);
   }
   .step-title {
-    font-size: 22px; font-weight: 700; margin: 0 0 6px;
-    letter-spacing: .2px;
+    font-size: 22px; font-weight: 600;
+    margin: 0 0 6px; letter-spacing: -0.02em;
   }
   .step-desc {
-    font-size: 13.5px; color: var(--muted); line-height: 1.55;
+    font-size: 13.5px; color: var(--text-dim); line-height: 1.6;
     max-width: 920px;
   }
-  .step-desc b { color: var(--text); }
-  .step-desc .neon { color: var(--neon); font-weight: 600; }
+  .step-desc b { color: var(--text); font-weight: 500; }
+  .step-desc .accent { color: var(--accent); font-weight: 500; }
+  .step-desc .hint { color: var(--text-faint); font-size: 12.5px; display: block; margin-top: 4px; }
 
-  .controls { display:flex; gap: 10px; align-items: center; }
+  .controls { display:flex; gap: 8px; align-items: center; }
   .btn {
-    background: #121c44; color: var(--text);
-    border: 1px solid #2a3a72; padding: 10px 16px; border-radius: 9px;
-    font-size: 13px; font-weight: 600; cursor: pointer; transition:.15s;
-    font-family: inherit;
+    background: var(--bg-card);
+    color: var(--text);
+    border: 1px solid var(--line-2);
+    padding: 9px 16px; border-radius: 8px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: border-color .15s, background .15s, color .15s;
+    font-family: inherit; letter-spacing: -0.005em;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  .btn:hover { border-color: var(--neon); color: var(--neon); }
-  .btn.primary { background: var(--neon); color: #00261c; border-color: transparent; }
-  .btn.primary:hover { filter: brightness(1.1); color:#00261c; }
+  .btn:hover { border-color: var(--line-3); background: var(--bg-soft); }
+  .btn.primary {
+    background: linear-gradient(180deg, #1f8f63, #178954);
+    color: #fff; border-color: rgba(52,211,153,0.4);
+    box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 6px 16px -6px rgba(52,211,153,0.4);
+  }
+  .btn.primary:hover { filter: brightness(1.08); }
   .btn.ghost { background: transparent; }
-  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn svg { vertical-align: middle; }
 
-  .hint {
-    color: var(--muted); font-size: 11px; margin-top: 4px;
-  }
-  .kbd {
-    display:inline-block; padding: 1px 7px; border-radius:4px;
-    background:#121a38; border:1px solid #2a3a78; font-family: ui-monospace, Menlo, monospace; font-size: 10.5px;
-  }
-
-  /* HACKED overlay */
+  /* ================= HACKED overlay ================= */
   .hacked {
     position: fixed; inset: 0;
-    background: radial-gradient(circle at 50% 50%, rgba(255,74,107,0.3), rgba(0,0,0,0.92));
+    background: rgba(4,5,9,0.82);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     display:none; align-items:center; justify-content:center;
     z-index: 100;
-    animation: fadeIn .4s ease;
+    animation: fadeIn .35s cubic-bezier(.4,0,.2,1);
   }
   .hacked.show { display:flex; }
   .hacked .box {
-    text-align:center; padding: 46px 60px;
-    border: 1px solid rgba(255,74,107,0.5);
-    border-radius: 16px;
-    background: rgba(10,12,30,0.9);
-    box-shadow: 0 0 100px rgba(255,74,107,0.45);
-    max-width: 640px;
+    max-width: 560px;
+    padding: 36px 44px 32px;
+    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
+    border: 1px solid var(--line-2);
+    border-radius: 14px;
+    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 40px 80px -20px rgba(0,0,0,0.7);
+    position: relative; overflow: hidden;
+  }
+  .hacked .box::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: linear-gradient(90deg, var(--proxy), var(--warn));
+  }
+  .hacked .tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase;
+    color: var(--proxy); font-weight: 600; margin-bottom: 14px;
+  }
+  .hacked .tag .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--proxy); box-shadow: 0 0 8px var(--proxy);
   }
   .hacked h1 {
-    margin: 0 0 14px; font-size: 54px; letter-spacing: 5px;
-    color: var(--proxy); text-shadow: 0 0 24px rgba(255,74,107,0.9);
+    margin: 0 0 14px; font-size: 28px; font-weight: 600;
+    letter-spacing: -0.02em;
   }
-  .hacked p { color: var(--muted); margin: 0 auto; line-height: 1.6; }
-  .hacked p + p { margin-top: 14px; color: var(--text); font-size: 16px; }
-  .hacked .foot { margin-top: 18px; font-size: 11.5px; color: var(--muted); }
+  .hacked p {
+    color: var(--text-dim); margin: 0 0 12px; line-height: 1.6;
+    font-size: 14px;
+  }
+  .hacked .callout {
+    margin-top: 16px; padding: 14px 16px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    border-left: 2px solid var(--proxy);
+    border-radius: 6px;
+    color: var(--text); font-size: 13.5px; line-height: 1.5;
+  }
+  .hacked .callout b { font-weight: 600; }
+  .hacked .foot {
+    margin-top: 18px; font-size: 11.5px; color: var(--text-faint);
+    display: flex; gap: 10px;
+  }
+  .kbd {
+    display:inline-block; padding: 1px 7px; border-radius: 4px;
+    background: var(--bg-soft); border: 1px solid var(--line-2);
+    font-family: "JetBrains Mono", ui-monospace, Menlo, monospace; font-size: 10.5px;
+    color: var(--text-dim);
+  }
   @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 
-  /* Small screens */
-  @media (max-width: 1100px) {
-    .node { width: 170px; padding: 14px; }
-    .step-title { font-size: 19px; }
+  @media (max-width: 1200px) {
+    .node { width: 200px; padding: 16px; }
+    .step-title { font-size: 20px; }
   }
+  @media (max-width: 900px) {
+    .panels { grid-template-columns: 1fr; }
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--line-2); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--line-3); }
 </style>
 </head>
 <body>
@@ -385,40 +505,58 @@
   <!-- ================= TOP BAR ================= -->
   <div class="topbar">
     <div class="brand">
-      <div class="dot"></div>
-      <span>AiTM Phishing</span>
-      <span class="sub">· live Evilginx2-style session hijack demo</span>
+      <div class="logo">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+      </div>
+      <span>AiTM Phishing Demo</span>
+      <span class="divider"></span>
+      <span class="sub">Evilginx2 session-hijack walkthrough</span>
     </div>
     <div class="progress">
       <span class="label">Progress</span>
-      <div class="dotbar" id="dotbar"></div>
+      <div class="track"><div class="fill" id="progFill"></div></div>
+      <span class="count"><b id="progCur">0</b> / <span id="progTot">6</span></span>
     </div>
   </div>
 
-  <!-- ================= HERO (FLOW) ================= -->
+  <!-- ================= HERO ================= -->
   <div class="hero" id="hero">
     <svg class="edges" id="edgesSvg" viewBox="0 0 1000 300" preserveAspectRatio="none">
-      <path id="edge-vp"        class="edge"            d="M 230,150 C 380,150 380,150 500,150" />
-      <path id="edge-ps"        class="edge"            d="M 500,150 C 620,150 620,150 770,150" />
-      <path id="edge-intercept" class="edge intercept"  d="M 500,175 C 500,235 560,255 620,280" />
+      <path id="edge-vp"        class="edge"           d="M 230,150 C 380,150 380,150 500,150" />
+      <path id="edge-ps"        class="edge"           d="M 500,150 C 620,150 620,150 770,150" />
+      <path id="edge-intercept" class="edge intercept" d="M 500,175 C 500,235 560,255 620,280" />
     </svg>
 
     <div class="nodes">
       <div class="node" id="victim">
-        <div class="tag">VICTIM</div>
-        <div class="icon">👤</div>
+        <div class="row1">
+          <span class="pill"><span class="dot"></span>Victim</span>
+          <div class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+        </div>
         <h3>Employee</h3>
-        <div class="sub">Chrome · Windows 11</div>
+        <div class="sub">chrome · windows 11</div>
       </div>
+
       <div class="node" id="proxy">
-        <div class="tag">AiTM PROXY</div>
-        <div class="icon">🕷️</div>
+        <div class="row1">
+          <span class="pill"><span class="dot"></span>AiTM Proxy</span>
+          <div class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s-8-4-8-10V5l8-3 8 3v7c0 6-8 10-8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+        </div>
         <h3>Evilginx2</h3>
         <div class="sub">login.tcucyberclass.website</div>
       </div>
+
       <div class="node" id="server">
-        <div class="tag">LEGIT SERVER</div>
-        <div class="icon">☁️</div>
+        <div class="row1">
+          <span class="pill"><span class="dot"></span>Legit Server</span>
+          <div class="icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="6" rx="2"/><rect x="2" y="14" width="20" height="6" rx="2"/><line x1="6" y1="7" x2="6.01" y2="7"/><line x1="6" y1="17" x2="6.01" y2="17"/></svg>
+          </div>
+        </div>
         <h3>Microsoft</h3>
         <div class="sub">login.microsoftonline.com</div>
       </div>
@@ -431,15 +569,16 @@
   <!-- ================= PANELS ================= -->
   <div class="panels">
 
-    <!-- Col 1: victim's browser -->
+    <!-- Col 1: victim browser -->
     <div class="col">
-      <div class="col-hdr victim"><span class="led"></span> Victim's browser</div>
+      <div class="col-hdr victim"><span class="chip"></span>Victim's browser</div>
       <div class="browser">
         <div class="urlbar">
           <div class="dots"><span></span><span></span><span></span></div>
-          <div class="url" id="urlDisplay" title="Click to toggle REAL ⟷ FAKE URL">
-            <span id="urlIcon" class="bad">⚠</span>
-            <span id="urlText">https://login.tcucyberclass.website/common/oauth2/authorize</span>
+          <div class="url" id="urlDisplay" title="Click to toggle real vs fake URL">
+            <svg id="urlIconReal" class="lock" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg id="urlIconBad" class="bad" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="urlText">login.tcucyberclass.website/common/oauth2/authorize</span>
           </div>
         </div>
         <div class="login-body">
@@ -463,34 +602,39 @@
 
           <div id="mfaStep" style="display:none">
             <div class="login-title">Approve sign-in</div>
-            <div style="font-size:13px; color:#555; margin:8px 0 14px;">
+            <div style="font-size:13px; color:#555; margin:8px 0 16px;">
               Enter this number in Microsoft Authenticator.
             </div>
             <div style="display:flex; gap:14px; align-items:center;">
-              <div style="width:48px;height:48px;border-radius:50%;background:#e6f0fa;display:flex;align-items:center;justify-content:center;font-size:24px;">📱</div>
+              <div style="width:48px;height:48px;border-radius:50%;background:#e6f0fa;display:flex;align-items:center;justify-content:center;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0067b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+              </div>
               <div>
-                <div style="font-size:26px; font-weight:700; letter-spacing:3px; color:#1b1b1b;">72</div>
+                <div style="font-size:26px; font-weight:600; letter-spacing:3px; color:#1b1b1b;">72</div>
                 <div style="font-size:11.5px; color:#555;">Match this number</div>
               </div>
             </div>
-            <button class="ms-btn" id="approveBtn">Approved ✓</button>
+            <button class="ms-btn" id="approveBtn">Approved</button>
             <div style="clear:both"></div>
           </div>
 
-          <div id="doneStep" style="display:none; text-align:center; padding: 10px 0;">
-            <div style="font-size:44px;">✅</div>
-            <div style="font-size:18px; font-weight:600; margin-top:4px;">Signed in to Microsoft 365</div>
+          <div id="doneStep" style="display:none; text-align:center; padding: 16px 0;">
+            <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#1f8f63" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:8px"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <div style="font-size:17px; font-weight:600; color:#1b1b1b;">Signed in to Microsoft 365</div>
             <div style="font-size:12.5px; color:#555; margin-top:4px;">Redirecting to Outlook…</div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Col 2: attacker console -->
+    <!-- Col 2: attacker capture -->
     <div class="col">
-      <div class="col-hdr attacker"><span class="led"></span> Attacker console (Evilginx2)</div>
+      <div class="col-hdr attacker"><span class="chip"></span>Attacker console</div>
       <div class="capture">
-        <div class="hdr"><span class="led"></span> SESSION CAPTURE</div>
+        <div class="hdr">
+          Session Capture
+          <span class="status"><span class="led"></span><span id="capStatus">Listening</span></span>
+        </div>
         <div class="rows">
           <div class="row" id="r-target"><span class="k">phishlet</span><span class="v">o365</span></div>
           <div class="row" id="r-ip"><span class="k">victim.ip</span><span class="v">—</span></div>
@@ -498,19 +642,19 @@
           <div class="row" id="r-pass"><span class="k">password</span><span class="v">—</span></div>
           <div class="row" id="r-mfa"><span class="k">mfa.intercepted</span><span class="v">—</span></div>
           <div class="row" id="r-cookie"><span class="k">ESTSAUTHPERSISTENT</span><span class="v">—</span></div>
-          <div class="row" id="r-token"><span class="k">session JWT</span><span class="v">—</span></div>
-          <div class="row" id="r-status"><span class="k">hijack.status</span><span class="v">IDLE</span></div>
+          <div class="row" id="r-token"><span class="k">session.jwt</span><span class="v">—</span></div>
+          <div class="row" id="r-status"><span class="k">hijack.status</span><span class="v">idle</span></div>
         </div>
       </div>
     </div>
 
     <!-- Col 3: Microsoft response -->
     <div class="col">
-      <div class="col-hdr server"><span class="led"></span> Microsoft server response</div>
+      <div class="col-hdr server"><span class="chip"></span>Microsoft server</div>
       <div class="response" id="responseBox">
-        <div class="line">Status: <b>awaiting request</b></div>
-        <div class="line">Auth: <b>—</b></div>
-        <div class="line">Set-Cookie: <b>—</b></div>
+        <div class="line"><span class="k">status</span>  <b>awaiting request</b></div>
+        <div class="line"><span class="k">auth</span>    <b>—</b></div>
+        <div class="line"><span class="k">session</span> <b>—</b></div>
       </div>
     </div>
   </div>
@@ -518,27 +662,39 @@
   <!-- ================= STEP CARD ================= -->
   <div class="stepcard">
     <div class="step-left">
-      <div class="step-num" id="stepNum">READY</div>
-      <h2 class="step-title" id="stepTitle">Press Run ▶ or Space to begin the attack</h2>
+      <div class="step-num" id="stepNum"><span class="pulse"></span>Ready</div>
+      <h2 class="step-title" id="stepTitle">Press Run to begin the attack</h2>
       <div class="step-desc" id="stepDesc">
-        You're about to watch an <b>Adversary-in-the-Middle</b> (AiTM) phishing attack hijack a Microsoft 365 session — even though the victim has MFA enabled.
-        <br/><span class="hint">💡 Tip: click the URL bar in the victim's browser to toggle between the <b>REAL</b> Microsoft URL and the <b>FAKE</b> phishing URL. They look nearly identical.</span>
+        You're about to watch an <b>Adversary-in-the-Middle</b> phishing attack hijack a Microsoft 365 session — despite MFA being enabled.
+        <span class="hint">Tip: click the URL bar in the victim's browser to toggle between the real and fake URL — they look nearly identical.</span>
       </div>
     </div>
     <div class="controls">
-      <button class="btn ghost" id="prevBtn" title="Previous (←)">◀ Back</button>
-      <button class="btn primary" id="nextBtn" title="Next (→ or Space)">Run ▶</button>
-      <button class="btn" id="resetBtn" title="Reset (R)">↺ Reset</button>
+      <button class="btn ghost" id="prevBtn" title="Previous (←)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <button class="btn primary" id="nextBtn" title="Next (Space)">
+        <span id="nextLabel">Run</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+      <button class="btn" id="resetBtn" title="Reset (R)">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Reset
+      </button>
     </div>
   </div>
 </div>
 
-<!-- HACKED overlay -->
+<!-- Hacked overlay -->
 <div class="hacked" id="hackedOverlay">
   <div class="box">
-    <h1>SESSION HIJACKED</h1>
-    <p>The attacker replayed the stolen <b style="color:var(--neon)">ESTSAUTHPERSISTENT</b> cookie from a different device — no password, no MFA prompt. Microsoft sees a valid authenticated session.</p>
-    <p><b>MFA verified identity. It did not verify origin.</b><br/>That is the AiTM vulnerability.</p>
+    <div class="tag"><span class="dot"></span>Incident · Critical</div>
+    <h1>Session hijacked</h1>
+    <p>The attacker replayed the stolen <b style="color:var(--accent)">ESTSAUTHPERSISTENT</b> cookie from a different device. No password prompt. No MFA challenge. Microsoft's server accepts the session as fully authenticated.</p>
+    <div class="callout">
+      <b>MFA verified the user's identity — not the request origin.</b> That's the AiTM vulnerability. Password rotation won't invalidate the stolen cookie; only revoking the session will.
+    </div>
     <div class="foot">Press <span class="kbd">R</span> to reset · <span class="kbd">Esc</span> to dismiss</div>
   </div>
 </div>
@@ -546,57 +702,49 @@
 <script>
   const $ = (id) => document.getElementById(id);
 
-  /* ================= Speed knob (LOWER = FASTER) ================= */
-  const T = {
-    packet: 550,   // ms for a packet to travel an edge
-    short:  180,   // tiny pause
-    medium: 380,   // beat
-    long:   700,   // dramatic pause before overlay
-  };
+  const T = { packet: 550, short: 180, medium: 380, long: 700 };
 
-  /* ================= Steps ================= */
   const STEPS = [
     {
-      num: "STEP 1 · 6",
+      num: "Step 1 · 6",
       title: "Victim clicks the phishing link",
-      desc: "The lure URL <b>login.tcucyberclass.website</b> looks legit. The victim's browser connects to the <span class='neon'>attacker's proxy</span>, not to Microsoft. TLS is valid — even the padlock is green.",
+      desc: "The lure URL <b>login.tcucyberclass.website</b> looks legitimate. The victim's browser opens a connection to the <span class='accent'>attacker's proxy</span>, not Microsoft. The TLS certificate is valid — the padlock shows secure.",
       run: step1,
     },
     {
-      num: "STEP 2 · 6",
+      num: "Step 2 · 6",
       title: "Proxy relays the request to Microsoft",
-      desc: "Evilginx2 opens a live session to the real <b>login.microsoftonline.com</b> and streams the response back to the victim. The page is <b>pixel-perfect</b> because it IS Microsoft's page — just re-served.",
+      desc: "Evilginx2 opens a live upstream session to <b>login.microsoftonline.com</b> and streams the response back to the victim. The page is <b>pixel-perfect</b> — it IS Microsoft's page, re-served through the proxy.",
       run: step2,
     },
     {
-      num: "STEP 3 · 6",
+      num: "Step 3 · 6",
       title: "Credentials captured in transit",
-      desc: "The victim types their password. The proxy sits in the middle and reads the <span class='neon'>plaintext username + password</span> before forwarding them upstream. Neither side notices.",
+      desc: "The victim enters their password. The proxy reads the <span class='accent'>plaintext username and password</span> from the middle of the TLS stream before forwarding them upstream. Neither side detects anything.",
       run: step3,
     },
     {
-      num: "STEP 4 · 6",
+      num: "Step 4 · 6",
       title: "MFA prompt forwarded both ways",
-      desc: "Microsoft issues a legitimate MFA challenge. The proxy relays it to the victim, who approves on their phone. <b>The MFA succeeds</b> — identity verified, origin not.",
+      desc: "Microsoft issues a legitimate MFA challenge. The proxy relays it to the victim, who approves on their phone. <b>MFA succeeds</b> — but it verified the user, not the request origin.",
       run: step4,
     },
     {
-      num: "STEP 5 · 6",
+      num: "Step 5 · 6",
       title: "Session cookie stolen",
-      desc: "Microsoft sends the authenticated <span class='neon'>ESTSAUTHPERSISTENT</span> cookie back. The proxy keeps a copy before passing it to the victim. This cookie survives password resets.",
+      desc: "Microsoft responds with the authenticated <span class='accent'>ESTSAUTHPERSISTENT</span> cookie. The proxy keeps a copy before passing it to the victim. This cookie survives password resets.",
       run: step5,
     },
     {
-      num: "STEP 6 · 6",
-      title: "Attacker replays → account pwned",
-      desc: "The attacker loads the stolen cookie into their own browser. Microsoft accepts the session — <b>no password, no MFA prompt</b>. Full access to email, files, Teams.",
+      num: "Step 6 · 6",
+      title: "Attacker replays the session",
+      desc: "The attacker loads the stolen cookie into their own browser. Microsoft accepts it — <b>no password, no MFA prompt</b>. Full access to email, files, Teams.",
       run: step6,
     },
   ];
   let idx = 0;
   let running = false;
 
-  /* ================= Helpers ================= */
   const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   function setActiveNodes(nodes) {
@@ -621,9 +769,9 @@
   }
   function resetResponse() {
     $("responseBox").innerHTML =
-      '<div class="line">Status: <b>awaiting request</b></div>' +
-      '<div class="line">Auth: <b>—</b></div>' +
-      '<div class="line">Set-Cookie: <b>—</b></div>';
+      '<div class="line"><span class="k">status</span>  <b>awaiting request</b></div>' +
+      '<div class="line"><span class="k">auth</span>    <b>—</b></div>' +
+      '<div class="line"><span class="k">session</span> <b>—</b></div>';
   }
 
   function flyPacket(pathId, pktId = "pkt1", duration = T.packet) {
@@ -632,7 +780,7 @@
       const pkt  = $(pktId);
       const svg  = $("edgesSvg");
       const hero = $("hero");
-      const svgRect = svg.getBoundingClientRect();
+      const svgRect  = svg.getBoundingClientRect();
       const heroRect = hero.getBoundingClientRect();
       const len = path.getTotalLength();
       const start = performance.now();
@@ -652,30 +800,32 @@
     });
   }
 
-  /* ================= Steps ================= */
   async function step1() {
+    $("capStatus").textContent = "Target connected";
     setActiveNodes(["victim","proxy"]);
     setEdge("edge-vp", true);
-    $("loginStep").style.display = ""; $("passStep").style.display = "none";
-    $("mfaStep").style.display = "none"; $("doneStep").style.display = "none";
+    $("loginStep").style.display = "";
+    $("passStep").style.display = "none";
+    $("mfaStep").style.display  = "none";
+    $("doneStep").style.display = "none";
     await flyPacket("edge-vp");
-    captureRow("r-ip", '10.42.77.13  (Chrome / Win11)');
+    captureRow("r-ip", '10.42.77.13  (Chrome · Win11)');
     await sleep(T.short);
   }
 
   async function step2() {
     setActiveNodes(["victim","proxy","server"]);
     setEdge("edge-ps", true);
-    addResponseLine('GET /oauth2/authorize → <b>200 OK</b>', "ok");
+    addResponseLine('<span class="k">GET</span> /oauth2/authorize → <b>200 OK</b>', "ok");
     await flyPacket("edge-ps");
     await sleep(T.short);
   }
 
   async function step3() {
     $("loginStep").style.display = "none"; $("passStep").style.display = "";
+    $("capStatus").textContent = "Credentials captured";
     setActiveNodes(["victim","proxy","server"]);
     setEdge("edge-vp", true); setEdge("edge-ps", true); setEdge("edge-intercept", true);
-
     await flyPacket("edge-vp");
     captureRow("r-email", 'j.smith@contoso.com');
     await sleep(T.short);
@@ -685,27 +835,28 @@
       flyPacket("edge-intercept", "pkt2"),
       flyPacket("edge-ps"),
     ]);
-    addResponseLine('POST /login → <b>Auth OK</b>, MFA required', "ok");
+    addResponseLine('<span class="k">POST</span> /login → <b>Auth OK</b>, MFA required', "ok");
   }
 
   async function step4() {
     $("passStep").style.display = "none"; $("mfaStep").style.display = "";
     setActiveNodes(["victim","proxy","server"]);
     setEdge("edge-ps", true); setEdge("edge-vp", true);
-    addResponseLine('MFA challenge: number-match <b>72</b>');
+    addResponseLine('<span class="k">mfa</span>  challenge number-match <b>72</b>');
     await flyPacket("edge-ps");
     await flyPacket("edge-vp");
     await sleep(T.medium);
     await flyPacket("edge-vp");
     await flyPacket("edge-ps");
-    captureRow("r-mfa", 'Approved (match: 72)');
+    captureRow("r-mfa", 'approved (match: 72)');
   }
 
   async function step5() {
     $("mfaStep").style.display = "none"; $("doneStep").style.display = "";
+    $("capStatus").textContent = "Session token extracted";
     setActiveNodes(["proxy","server"]);
     setEdge("edge-ps", true); setEdge("edge-intercept", true); setEdge("edge-vp", true);
-    addResponseLine('<b>Set-Cookie: ESTSAUTHPERSISTENT=0.AXoA…8f93</b>', "ok");
+    addResponseLine('<span class="k">Set-Cookie</span> <b>ESTSAUTHPERSISTENT=0.AXoA…8f93</b>', "ok");
     await flyPacket("edge-ps");
     await sleep(T.short);
     await Promise.all([
@@ -721,50 +872,38 @@
     setActiveNodes(["proxy"]);
     clearEdges();
     await sleep(T.medium);
-    addResponseLine('GET /outlook.office.com/mail/ → <b>200 OK</b> (j.smith)', "ok");
-    captureRow("r-status", 'HIJACKED ✓  attacker = j.smith@contoso');
+    addResponseLine('<span class="k">GET</span> /outlook.office.com/mail → <b>200 OK</b> (as j.smith)', "ok");
+    captureRow("r-status", 'hijacked — attacker = j.smith@contoso');
+    $("capStatus").textContent = "Account compromised";
     await sleep(T.long);
     $("hackedOverlay").classList.add("show");
   }
 
-  /* ================= Progress dots ================= */
-  function buildDots() {
-    const bar = $("dotbar"); bar.innerHTML = "";
-    for (let i = 0; i < STEPS.length; i++) {
-      const d = document.createElement("div");
-      d.className = "p-dot";
-      bar.appendChild(d);
-    }
-  }
-  function renderDots() {
-    [...$("dotbar").children].forEach((d, i) => {
-      d.classList.remove("active","done");
-      if (i < idx - 1) d.classList.add("done");
-      else if (i === idx - 1) d.classList.add("active");
-    });
+  function renderProgress() {
+    $("progFill").style.width = ((idx / STEPS.length) * 100) + "%";
+    $("progCur").textContent = idx;
+    $("progTot").textContent = STEPS.length;
   }
 
-  /* ================= Step card ================= */
   function renderStepCard() {
     if (idx === 0) {
-      $("stepNum").textContent = "READY";
-      $("stepTitle").textContent = "Press Run ▶ or Space to begin the attack";
-      $("stepDesc").innerHTML = `You're about to watch an <b>Adversary-in-the-Middle</b> (AiTM) phishing attack hijack a Microsoft 365 session — even though the victim has MFA enabled.
-        <br/><span class="hint">💡 Tip: click the URL bar in the victim's browser to toggle between the <b>REAL</b> Microsoft URL and the <b>FAKE</b> phishing URL.</span>`;
-      $("nextBtn").textContent = "Run ▶";
+      $("stepNum").innerHTML   = '<span class="pulse"></span>Ready';
+      $("stepTitle").textContent = "Press Run to begin the attack";
+      $("stepDesc").innerHTML    = `You're about to watch an <b>Adversary-in-the-Middle</b> phishing attack hijack a Microsoft 365 session — despite MFA being enabled.
+        <span class="hint">Tip: click the URL bar in the victim's browser to toggle between the real and fake URL — they look nearly identical.</span>`;
+      $("nextLabel").textContent = "Run";
     } else {
       const s = STEPS[idx-1];
-      $("stepNum").textContent  = s.num;
+      $("stepNum").innerHTML    = '<span class="pulse"></span>' + s.num;
       $("stepTitle").textContent = s.title;
-      $("stepDesc").innerHTML   = s.desc;
-      $("nextBtn").textContent  = idx >= STEPS.length ? "Done" : "Next ▶";
+      $("stepDesc").innerHTML    = s.desc;
+      $("nextLabel").textContent = idx >= STEPS.length ? "Done" : "Next";
     }
     $("prevBtn").disabled = idx <= 0;
     $("nextBtn").disabled = idx >= STEPS.length;
-    renderDots();
+    renderProgress();
   }
 
-  /* ================= Controller ================= */
   async function next() {
     if (running || idx >= STEPS.length) return;
     running = true;
@@ -794,9 +933,10 @@
     clearEdges();
     setActiveNodes([]);
     $("hackedOverlay").classList.remove("show");
+    $("capStatus").textContent = "Listening";
     ["r-ip","r-email","r-pass","r-mfa","r-cookie","r-token","r-status"].forEach(id => {
       const r = $(id);
-      r.querySelector(".v").textContent = id === "r-status" ? "IDLE" : "—";
+      r.querySelector(".v").textContent = id === "r-status" ? "idle" : "—";
       r.querySelector(".v").classList.remove("captured");
     });
     $("loginStep").style.display = ""; $("passStep").style.display = "none";
@@ -805,24 +945,21 @@
   }
   function reset() { idx = 0; softReset(); renderStepCard(); }
 
-  /* ================= URL toggle ================= */
   $("urlDisplay").addEventListener("click", () => {
-    const icon = $("urlIcon"), txt = $("urlText");
-    const real = icon.textContent === "🔒";
-    if (real) {
-      icon.className = "bad"; icon.textContent = "⚠";
-      txt.textContent = "https://login.tcucyberclass.website/common/oauth2/authorize";
+    const bad = $("urlIconBad"), lock = $("urlIconReal"), txt = $("urlText");
+    const showingReal = lock.style.display !== "none";
+    if (showingReal) {
+      bad.style.display = ""; lock.style.display = "none";
+      txt.textContent = "login.tcucyberclass.website/common/oauth2/authorize";
     } else {
-      icon.className = "lock"; icon.textContent = "🔒";
-      txt.textContent = "https://login.microsoftonline.com/common/oauth2/authorize";
+      bad.style.display = "none"; lock.style.display = "";
+      txt.textContent = "login.microsoftonline.com/common/oauth2/authorize";
     }
   });
 
-  /* ================= Buttons + keys ================= */
   $("nextBtn").addEventListener("click", next);
   $("prevBtn").addEventListener("click", prev);
   $("resetBtn").addEventListener("click", reset);
-
   $("nextLoginBtn").addEventListener("click", () => { if (!running && idx < 2) next(); });
   $("signInBtn").addEventListener("click",    () => { if (!running && idx < 3) next(); });
   $("approveBtn").addEventListener("click",   () => { if (!running && idx < 4) next(); });
@@ -839,7 +976,6 @@
     }
   });
 
-  buildDots();
   renderStepCard();
 </script>
 </body>
