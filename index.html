@@ -541,7 +541,12 @@
     <svg class="edges" id="edgesSvg" viewBox="0 0 1000 300" preserveAspectRatio="none">
       <path id="edge-vp"        class="edge"           d="M 230,150 C 380,150 380,150 500,150" />
       <path id="edge-ps"        class="edge"           d="M 500,150 C 620,150 620,150 770,150" />
-      <path id="edge-intercept" class="edge intercept" d="M 500,175 C 500,235 560,255 620,280" />
+      <path id="edge-intercept" class="edge intercept" d="M 500,175 C 500,220 500,260 500,300" marker-end="url(#arrow-red)" />
+      <defs>
+        <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="rgba(248,113,113,0.7)" />
+        </marker>
+      </defs>
     </svg>
 
     <div class="nodes">
