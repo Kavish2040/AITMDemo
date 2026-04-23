@@ -423,59 +423,76 @@
   .btn:disabled { opacity: .35; cursor: not-allowed; }
   .btn svg { vertical-align: middle; }
 
-  /* ================= HACKED overlay ================= */
+  /* ================= HACKED overlay (dramatic red) ================= */
   .hacked {
     position: fixed; inset: 0;
-    background: rgba(4,5,9,0.82);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
+    background: radial-gradient(circle at 50% 50%, rgba(248,113,113,0.3), rgba(0,0,0,0.92));
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     display:none; align-items:center; justify-content:center;
     z-index: 100;
     animation: fadeIn .35s cubic-bezier(.4,0,.2,1);
   }
   .hacked.show { display:flex; }
   .hacked .box {
-    max-width: 560px;
-    padding: 36px 44px 32px;
-    background: linear-gradient(180deg, var(--bg-card), var(--bg-elevated));
-    border: 1px solid var(--line-2);
-    border-radius: 14px;
-    box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 40px 80px -20px rgba(0,0,0,0.7);
-    position: relative; overflow: hidden;
-  }
-  .hacked .box::before {
-    content: ""; position: absolute; top: 0; left: 0; right: 0;
-    height: 2px; background: linear-gradient(90deg, var(--proxy), var(--warn));
+    text-align: center;
+    max-width: 620px;
+    padding: 46px 56px 38px;
+    background: rgba(10,12,30,0.9);
+    border: 1px solid rgba(248,113,113,0.5);
+    border-radius: 16px;
+    box-shadow: 0 0 100px rgba(248,113,113,0.45),
+                0 1px 0 rgba(255,255,255,0.05) inset;
+    position: relative;
   }
   .hacked .tag {
     display: inline-flex; align-items: center; gap: 8px;
-    font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase;
-    color: var(--proxy); font-weight: 600; margin-bottom: 14px;
+    font-size: 10.5px; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--proxy); font-weight: 700; margin-bottom: 16px;
   }
   .hacked .tag .dot {
-    width: 6px; height: 6px; border-radius: 50%;
-    background: var(--proxy); box-shadow: 0 0 8px var(--proxy);
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--proxy);
+    box-shadow: 0 0 10px var(--proxy), 0 0 20px var(--proxy);
+    animation: sirenDot 1s ease-in-out infinite;
   }
+  @keyframes sirenDot { 0%,100%{opacity:1} 50%{opacity:.35} }
   .hacked h1 {
-    margin: 0 0 14px; font-size: 28px; font-weight: 600;
-    letter-spacing: -0.02em;
+    margin: 0 0 16px; font-size: 48px; font-weight: 700;
+    letter-spacing: 4px; text-transform: uppercase;
+    color: var(--proxy);
+    text-shadow: 0 0 18px rgba(248,113,113,0.8),
+                 0 0 36px rgba(248,113,113,0.5);
+    animation: hackedBlink 1.4s ease-in-out infinite;
+  }
+  @keyframes hackedBlink {
+    0%, 100% {
+      opacity: 1;
+      text-shadow: 0 0 18px rgba(248,113,113,0.9),
+                   0 0 36px rgba(248,113,113,0.6);
+    }
+    50% {
+      opacity: 0.55;
+      text-shadow: 0 0 8px rgba(248,113,113,0.4),
+                   0 0 16px rgba(248,113,113,0.2);
+    }
   }
   .hacked p {
-    color: var(--text-dim); margin: 0 0 12px; line-height: 1.6;
-    font-size: 14px;
+    color: var(--text-dim); margin: 0 auto 12px; line-height: 1.6;
+    font-size: 14px; max-width: 500px;
   }
   .hacked .callout {
-    margin-top: 16px; padding: 14px 16px;
-    background: var(--bg-soft);
-    border: 1px solid var(--line);
-    border-left: 2px solid var(--proxy);
-    border-radius: 6px;
-    color: var(--text); font-size: 13.5px; line-height: 1.5;
+    margin: 18px auto 0; padding: 14px 18px;
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.35);
+    border-radius: 8px;
+    color: var(--text); font-size: 14px; line-height: 1.5;
+    max-width: 520px;
   }
-  .hacked .callout b { font-weight: 600; }
+  .hacked .callout b { font-weight: 600; color: #fff; }
   .hacked .foot {
-    margin-top: 18px; font-size: 11.5px; color: var(--text-faint);
-    display: flex; gap: 10px;
+    margin-top: 20px; font-size: 11.5px; color: var(--text-faint);
+    display: flex; gap: 10px; justify-content: center;
   }
   .kbd {
     display:inline-block; padding: 1px 7px; border-radius: 4px;
@@ -690,10 +707,10 @@
 <div class="hacked" id="hackedOverlay">
   <div class="box">
     <div class="tag"><span class="dot"></span>Incident · Critical</div>
-    <h1>Session hijacked</h1>
-    <p>The attacker replayed the stolen <b style="color:var(--accent)">ESTSAUTHPERSISTENT</b> cookie from a different device. No password prompt. No MFA challenge. Microsoft's server accepts the session as fully authenticated.</p>
+    <h1>Session Hijacked</h1>
+    <p>The attacker replayed the stolen <b style="color:var(--accent)">ESTSAUTHPERSISTENT</b> cookie from a different device. No password prompt. No MFA challenge. Microsoft sees a valid authenticated session.</p>
     <div class="callout">
-      <b>MFA verified the user's identity — not the request origin.</b> That's the AiTM vulnerability. Password rotation won't invalidate the stolen cookie; only revoking the session will.
+      <b>MFA verified the user's identity — not the request origin.</b> That is the AiTM vulnerability.
     </div>
     <div class="foot">Press <span class="kbd">R</span> to reset · <span class="kbd">Esc</span> to dismiss</div>
   </div>
