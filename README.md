@@ -6,12 +6,14 @@ Watch a fake Microsoft login proxy capture credentials, intercept MFA, and steal
 
 ## Run it
 
-Open `aitm-demo.html` directly in a browser, or serve locally:
+Open `index.html` directly in a browser, or serve locally:
 
 ```bash
 python3 -m http.server 8000
-# then open http://localhost:8000/aitm-demo.html
+# then open http://localhost:8000
 ```
+
+Or deploy to Vercel / Netlify / GitHub Pages — it's a single static file.
 
 ## Controls
 
